@@ -12,7 +12,7 @@
               :builds [{:source-paths ["src"]
                         :compiler {
                                    :output-to "public/cljsrt.js"
-                                   :optimizations :whitespace  ; whitespace, simple, advanced
+                                   :optimizations :simple  ; whitespace, simple, advanced
                                    :pretty-print true
                                    :foreign-libs []
                                    }}]

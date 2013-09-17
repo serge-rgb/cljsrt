@@ -1,5 +1,6 @@
-(ns cljsrt.core
-  (:require [goog.dom :as dom]
+(ns cljsrt.rt
+  (:require [clojure.browser.repl]
+            [goog.dom :as dom]
             [goog.math :as math])
   (:use-macros [cljsrt.macros :only [forloop]]))
 
@@ -18,15 +19,10 @@
                         (aset bitmap (+ index 0) (math/randomInt 255))
                         (aset bitmap (+ index 1) (math/randomInt 255))
                         (aset bitmap (+ index 2) (math/randomInt 255))
-                        (aset bitmap (+ index 3) 255))))
-    (.putImageData ctx image-data 0 0)))
+                        (aset bitmap (+ index 3) 255)))
+    (.putImageData ctx image-data 0 0))))
 
 (defn main []
   (render))
 
 (main)
-
-(comment
-  ;; load cljs repl:
-  (cemerick.piggieback/cljs-repl)
-)

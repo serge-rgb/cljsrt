@@ -8,18 +8,17 @@
 
   :repl-options {:init-ns cljsrt.app}
   :plugins [[com.cemerick/austin "0.1.0"]
-            [lein-cljsbuild "0.3.2"]
-            [org.bodil/lein-noderepl "0.1.10"]]
+            [lein-cljsbuild "0.3.2"]]
 
-  :cljsbuild {:builds [{:source-paths ["src/node"]
-                        :compiler {:target :nodejs
-                                   :output-to "nodeapp.js"
-                                   :optimizations :simple
-                                   :pretty-print true}}
-
-                       {:source-paths ["src/cljs"]
-                        :compiler {:output-to "target/classes/public/app.js"
-                                   :foreign-libs [{:file "resources/gl-matrix-min.js"
-                                                   :provides ["glmatrix"]}]
-                                   :optimizations :simple
-                                   :pretty-print true}}]})
+  :cljsbuild {:builds {:dev {
+                             :source-paths ["src/cljs"]
+                             :compiler {:foreign-libs [{:file "resources/gl-matrix-min.js"}]
+                                        :output-to "target/classes/public/app.js"
+                                        :optimizations :simple
+                                        :pretty-print true}}
+                       :release {
+                                 :source-paths ["src/cljs"]
+                                 :compiler {:externs ["resources/gl-matrix-min.js"]
+                                            :output-to "target/classes/public/app.js"
+                                            :optimizations :advanced
+                                            :pretty-print true}}}})

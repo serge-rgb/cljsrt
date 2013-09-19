@@ -46,27 +46,47 @@
 
 (def eye (.fromValues vec3 0 0 (- (/ aspect-ratio (* 2 (Math/tan (/ fov 2)))))))
 
-(defn pixel-to-near-plane [i j] (.fromValues vec3
-                                             (- (* 2 (/ i h)) aspect-ratio)
-                                             (- (* 2 (/ j h)) 1)
-                                             0))
-(defn ray-from-pixel [i j] (let [dir (.create vec3)
-                                 _ (.subtract vec3 dir (pixel-to-near-plane i j) eye)
-                                 _ (.normalize vec3 dir dir)]
-                             (Ray. eye dir)))
+(defn pixel-to-near-plane
+  ([i j]
+     "Clean, functional, pretty."
+     (.fromValues vec3
+                      (- (* 2 (/ i h)) aspect-ratio)
+                      (- (* 2 (/ j h)) 1)
+                      0))
+  ([i j out_vec]
+     "Avoid allocatig a new vector"
+     (.set vec3 out_vec
+           (- (* 2 (/ i h)) aspect-ratio)
+           (- (* 2 (/ j h)) 1)
+           0)))
+
+(defn ray-from-pixel
+  ([i j]
+     "Clean implementation"
+     (let [dir (.create vec3)
+           _ (.subtract vec3 dir (pixel-to-near-plane i j) eye)
+           _ (.normalize vec3 dir dir)]
+       (Ray. eye dir)))
+  ([i j out_dir out_near-vec]
+     "Ugly but fast. out_dir and out_near-vec belong to a ray that is elsewhere"
+     (let [_ (.subtract vec3 out_dir (pixel-to-near-plane i j out_near-vec) eye)
+           _ (.normalize vec3 out_dir out_dir)])))
 
 (defn render []
-  ;; (.fillRect ctx 0 0 w h)
-  (let [image-data (.getImageData ctx 0 0 w h)
+  (let [dir_vec (.create vec3)  ; Don't allocate a dir ray for every pixel
+        near_vec (.create vec3)  ; Same for the vector at the near plane
+        ray (Ray. eye dir_vec)
+        image-data (.getImageData ctx 0 0 w h)
         bitmap (.-data image-data)
         ]
     (forloop [[j 0] (< j h) (inc j)]
              (forloop [[i 0] (< i w) (inc i)]
                       (let [index (* 4 (+ i (* j w)))
-                            ray (ray-from-pixel i j)]
-                        (aset bitmap (+ index 0) (Math/abs (* 200 (get-x (.-dir ray)))))
-                        (aset bitmap (+ index 1) (Math/abs (* 200 (get-y (.-dir ray)))))
-                        (aset bitmap (+ index 2) (Math/abs (* 200 (get-z (.-dir ray)))))
+                            ;;ray (ray-from-pixel i j)]
+                            _ (ray-from-pixel i j dir_vec near_vec)]
+                        (aset bitmap (+ index 0) (* 200 (get-x (.-dir ray))))
+                        (aset bitmap (+ index 1) (* 200 (get-y (.-dir ray))))
+                        (aset bitmap (+ index 2) (* 200 (get-z (.-dir ray))))
                         (aset bitmap (+ index 3) 255)))
     (.putImageData ctx image-data 0 0))))
 

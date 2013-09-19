@@ -1,9 +1,0 @@
-{
-  "name": "cljsrt",
-  "description": "node.js app to run cljsrt",
-  "version": "0.0.1",
-  "private": true,
-  "dependencies": {
-    "express": "3.4.0"
-  }
-}

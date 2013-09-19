@@ -12,3 +12,5 @@ pom.xml.asc
 repl/*
 public/*
 out/*
+node_modules/*
+nodeapp.js

@@ -22,8 +22,10 @@
     (ring.adapter.jetty/run-jetty #'site {:port 8080 :join? false}))
   server)
 
+(def jetty-server (atom nil))
+
 (defn run-with-repl []
-  (let [server (run)]
-    (def repl-env (reset! cemerick.austin.repls/browser-repl-env
-                      (cemerick.austin/repl-env)))
-    (cemerick.austin.repls/cljs-repl repl-env)))
+  (reset! jetty-server (run))
+  (def repl-env (reset! cemerick.austin.repls/browser-repl-env
+                        (cemerick.austin/repl-env)))
+  (cemerick.austin.repls/cljs-repl repl-env))
